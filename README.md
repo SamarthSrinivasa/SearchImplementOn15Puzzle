@@ -1,2 +1,2 @@
-# SearchImplementOn15Puzzle
-Search Implementation on 15 Puzzle
+# SearchImplementOn8Puzzle
+Search Implementation on 8 Puzzle
