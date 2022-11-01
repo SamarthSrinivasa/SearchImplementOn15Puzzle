@@ -4,6 +4,8 @@ import time
 import numpy as np
 import pandas as pd
 
+seen = []
+
 class eightprob:
     initialState = [[1,2,3],[4,5,6],[0,7,8]]
     def goaltest(self, state):
@@ -21,49 +23,42 @@ class Node:
     def __lt__(self, Hval):
         return self.hVal < Hval.hVal
 
-def down(node: Node):
-    for i, row in enumerate(node.problem):
-        for j, col in enumerate(row):
-            if col == 0:
-                if i == 0:
-                    return None
-                node.problem[i][j], node.problem[i-1][j] = node.problem[i-1][j], node.problem[i][j]
-                return node
-
-    return -1,-1
-
-def up(node: Node):
-    for i, row in enumerate(node.problem):
-        for j, col in enumerate(row):
-            if col == 0:
-                if i == 2:
-                    return None
-                node.problem[i][j], node.problem[i+1][j] = node.problem[i+1][j], node.problem[i][j]
-                return node
-
-    return -1,-1
+def left(node: Node):
+    for i in range (len(node.problem)):
+        for j in range (len(node.problem[i])):
+            if node.problem[i][j] == 0:
+                if (i - 1) >= 0:
+                    node.problem[i][j], node.problem[i-1][j] = node.problem[i-1][j], node.problem[i][j]
+                    return node
+    return None
 
 def right(node: Node):
-    for i, row in enumerate(node.problem):
-        for j, col in enumerate(row):
-            if col == 0:
-                if i == 0:
-                    return None
-                node.problem[i][j], node.problem[i][j-1] = node.problem[i][j-1], node.problem[i][j]
-                return node
+    for i in range (len(node.problem)):
+        for j in range (len(node.problem[i])):
+            if node.problem[i][j] == 0:
+                if (i + 1) < len(node.problem[i]):
+                    node.problem[i][j], node.problem[i+1][j] = node.problem[i+1][j], node.problem[i][j]
+                    return node
+    return None
 
-    return -1,-1
+def up(node: Node):
+    for i in range (len(node.problem)):
+        for j in range (len(node.problem[i])):
+            if node.problem[i][j] == 0:
+                if (j - 1) >= 0:
+                    node.problem[i][j], node.problem[i][j-1] = node.problem[i][j-1], node.problem[i][j]
+                    return node
+    return None
 
-def left(node: Node):
-    for i, row in enumerate(node.problem):
-        for j, col in enumerate(row):
-            if col == 0:
-                if i == 2:
-                    return None
-                node.problem[i][j], node.problem[i][j+1] = node.problem[i][j+1], node.problem[i][j]
-                return node
+def down(node: Node):
+    for i in range (len(node.problem)):
+        for j in range (len(node.problem[i])):
+            if node.problem[i][j] == 0:
+                if (j + 1) < len(node.problem[j]):
+                    node.problem[i][j], node.problem[i][j+1] = node.problem[i][j+1], node.problem[i][j]
+                    return node
+    return None
 
-    return -1,-1
 
 # function general-search(problem,Queueing-Function)
 def generalSearch (problem, QFunc):
@@ -77,25 +72,32 @@ def generalSearch (problem, QFunc):
     #loop do 
     while states:
         
+        
         currentState = states.pop(0)  #nodes = remove-front(nodes) 
         # nodeCount = nodeCount + 1
-        print(currentState.problem)
+        for row in currentState.problem: 
+            print(row)
+        #print(currentState.problem)
         nodeCount += 1
         #if problem.currentstate = problem.goalstate then return node
         if problem.goaltest(currentState.problem):
             print("Solution Found!")
             print('How many nodes expanded = ', nodeCount)
-            print('Node: ')
+            print('depth: ', currentState.depth)
+            print('Max Queue size: ', len(states))
             return currentState
         #nodes = Queueing function(nodes, expand(nodes, problem.Operators))
         states = QueueFunc(currentState, states, QFunc)
+        #print("\n")
     else:
         print("fail")
         return None #if empty(nodes) then return failure 
 
 
-def QueueFunc(node, nodes, hx):
+def QueueFunc(node: Node, nodes, hx):
     
+    global seen
+
     #Expand Function for each Operator 
     branchNodeUp = copy.deepcopy(node)
     branchNodeUp = up(copy.deepcopy(branchNodeUp))
@@ -105,6 +107,7 @@ def QueueFunc(node, nodes, hx):
             branchNodeUp.cost += 1
             branchNodeLeft.hVal += 1
         heapq.heappush(nodes, branchNodeUp)
+            
 
     branchNodeDown = copy.deepcopy(node)
     branchNodeDown = down(copy.deepcopy(branchNodeDown))
@@ -114,6 +117,7 @@ def QueueFunc(node, nodes, hx):
             branchNodeDown.cost += 1
             branchNodeDown.hVal += 1
         heapq.heappush(nodes, branchNodeDown)
+         
 
     branchNodeLeft = copy.deepcopy(node)
     branchNodeLeft = left(copy.deepcopy(branchNodeLeft))
@@ -123,6 +127,7 @@ def QueueFunc(node, nodes, hx):
             branchNodeLeft.cost += 1
             branchNodeLeft.hVal += 1
         heapq.heappush(nodes, branchNodeLeft)
+        
 
     branchNodeRight = copy.deepcopy(node)
     branchNodeRight = right(copy.deepcopy(branchNodeRight))
@@ -131,7 +136,10 @@ def QueueFunc(node, nodes, hx):
         if (hx == "1"):
             branchNodeRight.cost += 1
             branchNodeRight.hVal += 1
-        heapq.heappush(nodes, branchNodeRight)  
+        heapq.heappush(nodes, branchNodeRight)
+       
+
+    
 
     return nodes
 
