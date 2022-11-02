@@ -6,8 +6,10 @@ import pandas as pd
 
 seen = []
 
-class eightprob:
-    initialState = [[1,6,7],[5,0,3],[4,8,2]]
+class eightprob():
+    #madeInitialState = puts
+    #initialState = [[7,1,2],[4,8,5],[6,3,0]]
+    initialState = 0
     def goaltest(self, state):
         if state == [[1,2,3],[4,5,6],[7,8,0]]:
             return True
@@ -111,7 +113,6 @@ def generalSearch (problem, QFunc):
     #loop do 
     while states:
         
-        
         currentState = states.pop(0)  #nodes = remove-front(nodes) 
         # nodeCount = nodeCount + 1
         
@@ -120,9 +121,6 @@ def generalSearch (problem, QFunc):
         #print(currentState.problem)
         nodeCount += 1
 
-        if nodeCount > 50000:
-            print("took too long")
-            return None
         #if problem.currentstate = problem.goalstate then return node
         if problem.goaltest(currentState.problem):
             print("Solution Found!")
@@ -133,6 +131,10 @@ def generalSearch (problem, QFunc):
         #nodes = Queueing function(nodes, expand(nodes, problem.Operators))
         states = QueueFunc(currentState, states, QFunc)
         #print("\n")
+
+        
+
+
     else:
         print("fail")
         return None #if empty(nodes) then return failure 
@@ -235,22 +237,65 @@ def QueueFunc(node: Node, nodes, hx):
     return nodes
 
 def main():
-    
-    puts = []
-    print("Samarth's 8-Puzzle solver")
-    choice = input("Please input 1 to input your own puzzle, or inputs 2-9 to test out in-built puzzles from depths 0-24 ")
 
     prob = eightprob()
+    puts = []
+    print("Samarth's 8-Puzzle solver")
+    choice = input("Press 1 if you want to input a puzzle, Press 2 for set depth puzzles" + '\n')
+    if choice == "1":
+        print("Enter your puzzle, using a zero to represent the blank. " + "Please only enter valid 8 puzzles. Enter the puzzle demilimiting " +"the numbers with a space. Press enter only when finished." + '\n')
+        puzzle_row_one = input("Enter the first row: ")
+        puzzle_row_two = input("Enter the second row: ")
+        puzzle_row_three = input("Enter the third row: ")
+    
+        puzzle_row_one = puzzle_row_one.split()
+        puzzle_row_two = puzzle_row_two.split()
+        puzzle_row_three = puzzle_row_three.split()
+        for i in range(0, 3):
+            puzzle_row_one[i] = int(puzzle_row_one[i])
+            puzzle_row_two[i] = int(puzzle_row_two[i])
+            puzzle_row_three[i] = int(puzzle_row_three[i])
+        puts = [puzzle_row_one, puzzle_row_two, puzzle_row_three]
 
-    node2 = Node([[1,2,4],[3,0,6],[7,8,5]], 0, 0, 0)
-    #goalState = [[1,2,3],[4,5,6],[7,8,0]]
-    #initialState = [[1,2,3],[4,5,6],[0,7,8]]
-    #print(AstarWManhattan(node2))
+        prob.initialState = puts
 
+        choice2 = input("If you want to run Uniform Cost, press 1, if you want to run Misplaced Tile Heuristic, press 2, and if you want to run the Manhattan Heuristic, press 3" + '\n')
+
+        if choice2 == "1":
+            generalSearch(prob, 1)
+        if choice2 == "2":
+            generalSearch(prob, 2)
+        if choice2 == "3":
+            generalSearch(prob, 3)
     if choice == "2":
-        generalSearch(prob, 2)
+        depthNum = input("Enter a depth: 0,2,4,8,13,16,20 or 24" + '\n')
+        if depthNum == 0:
+            prob.initialState = [[1,2,3],[4,5,6],[7,8,0]]
+        if depthNum == 2:
+            prob.initialState = [[1,2,3],[4,5,6],[0,7,8]]
+        if depthNum == 4:
+            prob.initialState = [[1,2,3],[5,0,6],[4,7,8]]
+        if depthNum == 8:
+            prob.initialState = [[1,3,6],[5,0,2],[4,7,8]]
+        if depthNum == 12:
+            prob.initialState = [[1,3,6],[5,0,7],[4,8,2]]
+        if depthNum == 16:
+            prob.initialState = [[1,6,7],[5,0,3],[4,8,2]]
+        if depthNum == 20:
+            prob.initialState = [[7,1,2],[4,8,5],[6,3,0]]
+        if depthNum == 24:
+            prob.initialState = [[0,7,2],[4,6,1],[3,5,8]]
+        if depthNum == 31:
+            prob.initialState = [[8,6,7],[2,5,4],[3,0,1]]
 
+        choice2 = input("If you want to run Uniform Cost, press 1, if you want to run Misplaced Tile Heuristic, press 2, and if you want to run the Manhattan Heuristic, press 3" + '\n')
 
+        if choice2 == "1":
+            generalSearch(prob, 1)
+        if choice2 == "2":
+            generalSearch(prob, 2)
+        if choice2 == "3":
+            generalSearch(prob, 3)
 
 main()
 
