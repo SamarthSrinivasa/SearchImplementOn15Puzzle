@@ -62,6 +62,7 @@ def down(node: Node):
 def AstarWMisplaced(node: Node):
 
     goalState = [[1,2,3],[4,5,6],[7,8,0]]
+    graphxy = [[0,0],[0,1],[0,2]]
 
     #initialState = [[1,2,3],[4,5,6],[0,7,8]]
 
@@ -70,12 +71,33 @@ def AstarWMisplaced(node: Node):
         for y in range (len(node.problem[x])):
             if node.problem[x][y] != goalState[x][y] and node.problem[x][y] != 0:
                 misplacedHeuristic += 1
+
                 # print("changedVal")
     return misplacedHeuristic
 
 def AstarWManhattan(node: Node):
-    return None
 
+
+    goalState = [[1,2,3],[4,5,6],[7,8,0]]
+
+    manhat = 0
+    #print(manhat)
+    for x in range (len(node.problem)):
+        for y in range (len(node.problem[x])):
+            if goalState[x][y] == 0:
+                cor1 = x
+                cor2 = y
+    #print(cor1)
+    #print(cor2)
+    for x in range (len(node.problem)):
+        for y in range (len(node.problem[x])):
+            if node.problem[x][y] != goalState[x][y] and node.problem[x][y] != 0:
+                manhat += (abs(cor1 - x) + abs(cor2 - y) + 1)
+                #print((abs(cor1 - x) + abs(cor2 - y))
+                
+
+    #print(manhat)
+    return manhat
 
 # function general-search(problem,Queueing-Function)
 def generalSearch (problem, QFunc):
@@ -130,12 +152,15 @@ def QueueFunc(node: Node, nodes, hx):
             #print('UDS')
             branchNodeUp.cost += 1
             branchNodeUp.hVal += 1
+            #branchNodeUp.depth += 1
         if (hx == 2):
             #print("A*")
             #print(branchNode.depth)
-            branchNodeUp.cost = AstarWMisplaced(branchNodeUp) + branchNodeUp.depth
+            branchNodeUp.cost = AstarWMisplaced(branchNodeUp) + branchNodeUp.cost
             #print(branchNodeUp.cost)
             #print(branchNodeUp.cost)
+        if (hx == 3):
+            branchNodeUp.cost = AstarWManhattan(branchNodeUp) + branchNodeUp.cost
 
         if (branchNodeUp.problem) not in seen: 
             heapq.heappush(nodes, branchNodeUp)
@@ -146,14 +171,16 @@ def QueueFunc(node: Node, nodes, hx):
     if branchNodeDown is not None:
         branchNodeDown.depth += 1
         if (hx == 1):
+            #branchNodeDown.depth += 1
             branchNodeDown.cost += 1
             branchNodeDown.hVal += 1
         if (hx == 2):
-            branchNodeDown.cost = AstarWMisplaced(branchNodeDown) + branchNodeDown.depth
+            branchNodeDown.cost = AstarWMisplaced(branchNodeDown) + branchNodeDown.cost
             #print(branchNodeDown.cost)
             # print(branchNodeDown.cost)
         #heapq.heappush(nodes, branchNodeDown)
-
+        if (hx == 3):
+            branchNodeDown.cost = AstarWManhattan(branchNodeDown) + branchNodeDown.cost
         if (branchNodeDown.problem) not in seen: 
             heapq.heappush(nodes, branchNodeDown)
             seen.append(branchNodeDown.problem)
@@ -169,12 +196,13 @@ def QueueFunc(node: Node, nodes, hx):
             branchNodeLeft.hVal += 1
             #print(branchNodeLeft.cost)
         if (hx == 2):
-           branchNodeLeft.cost = AstarWMisplaced(branchNodeLeft) + branchNodeLeft.depth
+           branchNodeLeft.cost = AstarWMisplaced(branchNodeLeft) + branchNodeLeft.cost
            #print(branchNodeLeft.cost)
             #print(branchNodeLeft.cost)
             #print(branchNodeLeft.cost)
         #heapq.heappush(nodes, branchNodeLeft)
-
+        if (hx == 3):
+            branchNodeLeft.cost = AstarWManhattan(branchNodeLeft) + branchNodeLeft.cost
         if (branchNodeLeft.problem) not in seen: 
             heapq.heappush(nodes, branchNodeLeft)
             seen.append(branchNodeLeft.problem)
@@ -185,16 +213,18 @@ def QueueFunc(node: Node, nodes, hx):
     if branchNodeRight is not None:
         branchNodeRight.depth += 1
         if (hx == 1):
+            #branchNodeRight.depth += 1
             branchNodeRight.cost += 1
             branchNodeRight.hVal += 1
             #print(branchNodeRight.cost)
         if (hx == 2):
-            branchNodeRight.cost = AstarWMisplaced(branchNodeRight) + branchNodeRight.depth
+            branchNodeRight.cost = AstarWMisplaced(branchNodeRight) + branchNodeRight.cost
             #print(branchNodeRight.cost)
             #print(branchNodeRight.cost)
             #print(branchNodeRight.cost)
         #heapq.heappush(nodes, branchNodeRight)
-
+        if (hx == 3):
+            branchNodeRight.cost = AstarWManhattan(branchNodeRight) + branchNodeRight.cost
         if (branchNodeRight.problem) not in seen: 
             #print("New node adding to shaun")
             heapq.heappush(nodes, branchNodeRight)
@@ -212,10 +242,10 @@ def main():
 
     prob = eightprob()
 
-    #node2 = Node([[1,2,4],[3,0,6],[7,8,5]], 0, 0, 0)
+    node2 = Node([[1,2,4],[3,0,6],[7,8,5]], 0, 0, 0)
     #goalState = [[1,2,3],[4,5,6],[7,8,0]]
     #initialState = [[1,2,3],[4,5,6],[0,7,8]]
-    #print(AstarWMisplaced(node2))
+    #print(AstarWManhattan(node2))
 
     if choice == "2":
         generalSearch(prob, 2)
